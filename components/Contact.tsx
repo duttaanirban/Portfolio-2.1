@@ -19,13 +19,13 @@ export default function Contact() {
     setIsSubmitting(true)
 
     try {
-      const response = await fetch("mailto:anirbandutta458@gmail.com?subject=New Message from Portfolio&body=" + 
+      await fetch("mailto:anirbandutta458@gmail.com?subject=New Message from Portfolio&body=" +
         encodeURIComponent(`Name: ${formData.name}\nEmail: ${formData.email}\n\nMessage:\n${formData.message}`))
       
       setSubmitStatus("success")
       setFormData({ name: "", email: "", message: "" })
       setTimeout(() => setSubmitStatus("idle"), 3000)
-    } catch (error) {
+    } catch {
       setSubmitStatus("error")
       setTimeout(() => setSubmitStatus("idle"), 3000)
     } finally {
@@ -44,7 +44,7 @@ export default function Contact() {
           </p>
 
           <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-white">
-            Let's build something amazing together.
+            Let&apos;s build something amazing together.
           </h2>
 
           <p className="mt-6 max-w-2xl mx-auto text-base md:text-lg leading-8 text-white/70">
@@ -111,7 +111,7 @@ export default function Contact() {
             </button>
 
             {submitStatus === "success" && (
-              <p className="text-sm text-green-400 text-center">Message sent! I'll get back to you soon.</p>
+              <p className="text-sm text-green-400 text-center">Message sent! I&apos;ll get back to you soon.</p>
             )}
             {submitStatus === "error" && (
               <p className="text-sm text-red-400 text-center">Something went wrong. Please try again.</p>
