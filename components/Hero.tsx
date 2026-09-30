@@ -44,7 +44,7 @@ export default function Hero() {
             <div className="flex items-center justify-center rounded-4xl border border-white/10 bg-[#12081f] p-6 md:p-8">
               <div className="relative aspect-square w-full max-w-sm overflow-hidden rounded-full border-4 border-white/10 shadow-2xl shadow-black/30">
                 <Image
-                  src="/Profile.jpeg"
+                  src="/pic.jpeg"
                   alt="Portrait of Anirban"
                   fill
                   priority
