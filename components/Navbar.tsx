@@ -1,11 +1,62 @@
 // components/Navbar.tsx
 "use client"
 
-import { useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import { motion } from "framer-motion"
+
+const links = [
+  { id: "home", label: "Home" },
+  { id: "about", label: "About" },
+  { id: "projects", label: "Projects" },
+  { id: "contact", label: "Contact" },
+] as const
 
 export default function Navbar() {
   const navRef = useRef<HTMLDivElement | null>(null)
+  const [activeSection, setActiveSection] = useState<string>("home")
+
+  useEffect(() => {
+    const sections = links.flatMap(({ id }) => {
+      const element = document.getElementById(id)
+      return element ? [{ id, element }] : []
+    })
+    let frame = 0
+
+    const updateActiveSection = () => {
+      frame = 0
+      // Track a line below the navbar, keeping tall sections active as they scroll.
+      const marker = Math.max(96, window.innerHeight * 0.25)
+      let current: string = sections[0]?.id ?? "home"
+      for (const section of sections) {
+        if (section.element.getBoundingClientRect().top <= marker) current = section.id
+      }
+      // The last section may be too short to reach the marker.
+      if (window.scrollY > 0 && window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 2) {
+        current = sections.at(-1)?.id ?? current
+      }
+      setActiveSection(current)
+    }
+
+    const scheduleUpdate = () => {
+      if (!frame) frame = window.requestAnimationFrame(updateActiveSection)
+    }
+
+    // Project filtering, fonts, and responsive layout can move section boundaries.
+    const observer = new ResizeObserver(scheduleUpdate)
+    sections.forEach(({ element }) => observer.observe(element))
+    window.addEventListener("scroll", scheduleUpdate, { passive: true })
+    window.addEventListener("resize", scheduleUpdate)
+    window.addEventListener("hashchange", scheduleUpdate)
+    scheduleUpdate()
+
+    return () => {
+      window.cancelAnimationFrame(frame)
+      observer.disconnect()
+      window.removeEventListener("scroll", scheduleUpdate)
+      window.removeEventListener("resize", scheduleUpdate)
+      window.removeEventListener("hashchange", scheduleUpdate)
+    }
+  }, [])
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
     e.preventDefault()
@@ -20,6 +71,7 @@ export default function Navbar() {
 
   return (
     <motion.nav
+      aria-label="Main navigation"
       initial={{ y: -100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.6 }}
@@ -32,25 +84,18 @@ export default function Navbar() {
 
         <div className="flex gap-6 text-sm text-gray-300">
 
-            <a href="#home" onClick={(e) => handleNavClick(e, "home")} className="relative group transition">
-                <span className="group-hover:text-white">Home</span>
-                <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-purple-400 transition-all group-hover:w-full"></span>
+          {links.map(({ id, label }) => (
+            <a
+              key={id}
+              href={`#${id}`}
+              onClick={(e) => handleNavClick(e, id)}
+              aria-current={activeSection === id ? "location" : undefined}
+              className={`relative group rounded-sm transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-purple-400 ${activeSection === id ? "text-purple-300" : "hover:text-white"}`}
+            >
+              {label}
+              <span aria-hidden="true" className={`absolute left-0 -bottom-1 h-0.5 rounded-full bg-purple-400 transition-[width] motion-reduce:transition-none ${activeSection === id ? "w-full" : "w-0 group-hover:w-full"}`} />
             </a>
-
-            <a href="#about" onClick={(e) => handleNavClick(e, "about")} className="relative group transition">
-                <span className="group-hover:text-white">About</span>
-                <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-purple-400 transition-all group-hover:w-full"></span>
-            </a>
-
-            <a href="#projects" onClick={(e) => handleNavClick(e, "projects")} className="relative group transition">
-                <span className="group-hover:text-white">Projects</span>
-                <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-purple-400 transition-all group-hover:w-full"></span>
-            </a>
-
-            <a href="#contact" onClick={(e) => handleNavClick(e, "contact")} className="relative group transition">
-                <span className="group-hover:text-white">Contact</span>
-                <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-purple-400 transition-all group-hover:w-full"></span>
-            </a>
+          ))}
         </div>
 
       </div>
