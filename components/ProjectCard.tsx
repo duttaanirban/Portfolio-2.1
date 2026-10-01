@@ -3,9 +3,10 @@ type ProjectCardProps = {
   description: string
   tags: string[]
   href?: string
+  demoHref?: string
 }
 
-export default function ProjectCard({ title, description, tags, href }: ProjectCardProps) {
+export default function ProjectCard({ title, description, tags, href, demoHref }: ProjectCardProps) {
   return (
     <article className="group rounded-4xl border border-white/10 bg-white/5 p-6 md:p-7 shadow-2xl shadow-black/20 backdrop-blur-xl transition duration-300 hover:-translate-y-1 hover:border-purple-400/30 hover:shadow-purple-500/20">
       <div className="flex items-start justify-between gap-4">
@@ -26,16 +27,29 @@ export default function ProjectCard({ title, description, tags, href }: ProjectC
         ))}
       </div>
 
+      <div className="mt-6 flex flex-wrap gap-3">
+      {demoHref ? (
+        <a
+          href={demoHref}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={`Live demo of ${title} (opens in a new tab)`}
+          className="inline-flex items-center rounded-full bg-purple-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-purple-500 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-purple-400"
+        >
+          Live Demo
+        </a>
+      ) : null}
       {href ? (
         <a
           href={href}
           target="_blank"
           rel="noreferrer"
-          className="mt-6 inline-flex items-center rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white/85 transition hover:border-purple-400/40 hover:bg-purple-500/10 hover:text-white"
+          className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white/85 transition hover:border-purple-400/40 hover:bg-purple-500/10 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-purple-400"
         >
           View Repository
         </a>
       ) : null}
+      </div>
     </article>
   )
 }

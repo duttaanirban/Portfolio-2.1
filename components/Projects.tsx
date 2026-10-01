@@ -45,10 +45,29 @@ export default function Projects() {
             >
             <div className="min-w-[320px] max-w-105 flex-1 snap-start relative z-20">
               <ProjectCard
+                title="Nexa"
+                description="A developer workspace for managing projects, tasks, and sprints, with productivity analytics and AI-powered project insights."
+                tags={["React", "Express", "PostgreSQL"]}
+                href="https://github.com/duttaanirban/Nexa"
+                demoHref="https://nexa-tan.vercel.app"
+              />
+            </div>
+            <div className="min-w-[320px] max-w-105 flex-1 snap-start relative z-20">
+              <ProjectCard
+                title="EventX"
+                description="An event ticketing platform with Razorpay payments, QR-based check-in, real-time availability, and dashboards for organizers and admins."
+                tags={["React", "Express", "MongoDB"]}
+                href="https://github.com/duttaanirban/EventX"
+                demoHref="https://eventx-duf8.onrender.com"
+              />
+            </div>
+            <div className="min-w-[320px] max-w-105 flex-1 snap-start relative z-20">
+              <ProjectCard
                 title="QuickBlog"
                 description="A full-stack blogging platform with an admin dashboard, AI-powered content generation, and image optimization."
                 tags={["React", "Express", "MongoDB"]}
                 href="https://github.com/duttaanirban/QuickBlog"
+                demoHref="https://quick-blog-flax.vercel.app"
               />
             </div>
             <div className="min-w-[320px] max-w-105 flex-1 snap-start relative z-20">
@@ -57,6 +76,7 @@ export default function Projects() {
                 description="A full-stack AI platform for generating articles, images, removing backgrounds, and reviewing resumes with a community feed."
                 tags={["React", "Express", "PostgreSQL"]}
                 href="https://github.com/duttaanirban/QuickAi"
+                demoHref="https://quick-ai-mu-one.vercel.app"
               />
             </div>
             <div className="min-w-[320px] max-w-105 flex-1 snap-start relative z-20">
@@ -65,6 +85,7 @@ export default function Projects() {
                 description="A functional React and React Flow prototype for designing, validating, and testing internal HR workflows like onboarding and approvals."
                 tags={["React Flow", "TypeScript", "Workflow Builder"]}
                 href="https://github.com/duttaanirban/HR_WORKFLOW_DESIGNER"
+                demoHref="https://hr-workflow-designer-sage.vercel.app/"
               />
             </div>
             <div className="min-w-[320px] max-w-105 flex-1 snap-start relative z-20">

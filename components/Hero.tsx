@@ -30,13 +30,14 @@ export default function Hero() {
             Full stack developer focused on building scalable and interactive applications.
           </p>
 
-          <motion.button
+          <motion.a
+            href="#projects"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.98 }}
-            className="mt-8 rounded-xl bg-purple-600 px-6 py-3 font-medium text-white shadow-lg shadow-purple-600/25 transition"
+            className="mt-8 inline-flex rounded-xl bg-purple-600 px-6 py-3 font-medium text-white shadow-lg shadow-purple-600/25 transition focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-purple-400"
           >
             View Projects
-          </motion.button>
+          </motion.a>
         </div>
 
         <div className="relative z-10">
@@ -47,6 +48,7 @@ export default function Hero() {
                   src="/pic.jpeg"
                   alt="Portrait of Anirban"
                   fill
+                  sizes="(min-width: 1232px) 362px, (min-width: 1024px) calc(42.5vw - 162px), min(376px, calc(100vw - 140px))"
                   priority
                   className="object-cover object-center"
                 />

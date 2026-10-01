@@ -1,8 +1,9 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: dark;
+  --background: #0a0a0a;
+  --foreground: #ededed;
 }
 
 @theme inline {
@@ -12,22 +13,13 @@
   --font-mono: var(--font-geist-mono);
 }
 
-/* light/dark overrides when user toggles via data-theme */
-[data-theme="light"] {
-  --background: #ffffff;
-  --foreground: #171717;
+html {
+  scroll-padding-top: 6rem;
 }
 
-[data-theme="dark"] {
-  --background: #0a0a0a;
-  --foreground: #ededed;
-}
-
-/* Respect system preference by default */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
   }
 }
 
