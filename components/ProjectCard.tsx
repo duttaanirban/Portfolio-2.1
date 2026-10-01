@@ -1,54 +1,54 @@
+import { ArrowUpRight, Code2, ChartNoAxesCombined, GitBranch, LayoutDashboard, NotebookPen, Sparkles, Ticket } from "lucide-react"
+
+const visuals = [
+  { icon: LayoutDashboard, color: "border-violet-400/25 bg-violet-400/10 text-violet-300", glow: "from-violet-500/10" },
+  { icon: Ticket, color: "border-rose-400/25 bg-rose-400/10 text-rose-300", glow: "from-rose-500/10" },
+  { icon: NotebookPen, color: "border-amber-400/25 bg-amber-400/10 text-amber-300", glow: "from-amber-500/10" },
+  { icon: Sparkles, color: "border-purple-400/25 bg-purple-400/10 text-purple-300", glow: "from-purple-500/10" },
+  { icon: GitBranch, color: "border-cyan-400/25 bg-cyan-400/10 text-cyan-300", glow: "from-cyan-500/10" },
+  { icon: ChartNoAxesCombined, color: "border-teal-400/25 bg-teal-400/10 text-teal-300", glow: "from-teal-500/10" },
+]
+
 type ProjectCardProps = {
   title: string
+  label: string
   description: string
-  tags: string[]
-  href?: string
+  tags: readonly string[]
+  href: string
   demoHref?: string
+  number: number
 }
 
-export default function ProjectCard({ title, description, tags, href, demoHref }: ProjectCardProps) {
+export default function ProjectCard({ title, label, description, tags, href, demoHref, number }: ProjectCardProps) {
+  const visual = visuals[(number - 1) % visuals.length]
+  const Icon = visual.icon
+
   return (
-    <article className="group rounded-4xl border border-white/10 bg-white/5 p-6 md:p-7 shadow-2xl shadow-black/20 backdrop-blur-xl transition duration-300 hover:-translate-y-1 hover:border-purple-400/30 hover:shadow-purple-500/20">
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <p className="text-sm uppercase tracking-[0.2em] text-purple-300/80">Featured project</p>
-          <h3 className="mt-3 text-2xl font-semibold text-white">{title}</h3>
+    <article className="relative isolate flex h-full min-w-0 flex-col overflow-hidden rounded-3xl border border-white/10 bg-[#111114] p-6 transition-[border-color,box-shadow] duration-300 hover:border-purple-400/35 hover:shadow-xl hover:shadow-purple-950/20 focus-within:border-purple-400/35 motion-reduce:transition-none sm:p-8">
+      <div aria-hidden="true" className={`pointer-events-none absolute inset-0 -z-10 bg-linear-to-br ${visual.glow} via-transparent to-transparent`} />
+      <div className="mb-8 flex items-center justify-between">
+        <div className={`flex size-12 items-center justify-center rounded-2xl border ${visual.color}`}>
+          <Icon aria-hidden="true" className="size-6" strokeWidth={1.5} />
         </div>
-        <div className="h-12 w-12 rounded-full border border-white/10 bg-[linear-gradient(180deg,rgba(168,85,247,0.22),rgba(17,24,39,0.2))]" />
+        <span aria-hidden="true" className="font-mono text-sm text-zinc-500">/{String(number).padStart(2, "0")}</span>
       </div>
-
-      <p className="mt-4 max-w-xl text-base leading-7 text-white/70">{description}</p>
-
-      <div className="mt-6 flex flex-wrap gap-3">
+      <p className="text-xs font-medium uppercase tracking-[0.16em] text-zinc-400">{label}</p>
+      <h3 className="mt-3 text-2xl font-semibold tracking-tight text-white sm:text-3xl">{title}</h3>
+      <p className="mt-4 text-sm leading-7 text-zinc-400 sm:text-base">{description}</p>
+      <ul aria-label={`${title} technologies`} className="mb-8 mt-6 flex flex-wrap gap-2">
         {tags.map((tag) => (
-          <span key={tag} className="rounded-full border border-white/10 bg-black/20 px-4 py-2 text-sm text-white/75">
-            {tag}
-          </span>
+          <li key={tag} className="rounded-lg border border-white/[0.08] bg-white/[0.03] px-3 py-1.5 text-xs text-zinc-300">{tag}</li>
         ))}
-      </div>
-
-      <div className="mt-6 flex flex-wrap gap-3">
-      {demoHref ? (
-        <a
-          href={demoHref}
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label={`Live demo of ${title} (opens in a new tab)`}
-          className="inline-flex items-center rounded-full bg-purple-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-purple-500 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-purple-400"
-        >
-          Live Demo
+      </ul>
+      <div className="mt-auto flex flex-wrap items-center gap-3 border-t border-white/[0.08] pt-5">
+        {demoHref ? (
+          <a href={demoHref} target="_blank" rel="noopener noreferrer" aria-label={`Live demo of ${title} (opens in a new tab)`} className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-purple-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-purple-500 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-purple-400">
+            Live Demo <ArrowUpRight aria-hidden="true" className="size-4" />
+          </a>
+        ) : null}
+        <a href={href} target="_blank" rel="noopener noreferrer" aria-label={`View ${title} repository (opens in a new tab)`} className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-white/10 px-4 py-2 text-sm font-medium text-zinc-300 transition-colors hover:border-white/25 hover:bg-white/5 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-purple-400">
+          <Code2 aria-hidden="true" className="size-4" /> View Code
         </a>
-      ) : null}
-      {href ? (
-        <a
-          href={href}
-          target="_blank"
-          rel="noreferrer"
-          className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white/85 transition hover:border-purple-400/40 hover:bg-purple-500/10 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-purple-400"
-        >
-          View Repository
-        </a>
-      ) : null}
       </div>
     </article>
   )
