@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useRef, useState } from "react"
 import { Mail } from "lucide-react"
 import { FaGithub, FaLinkedin, FaTwitter } from "react-icons/fa"
 
@@ -8,27 +8,44 @@ export default function Contact() {
   const [formData, setFormData] = useState({ name: "", email: "", message: "" })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle")
+  const [errorMessage, setErrorMessage] = useState("")
+  const submitting = useRef(false)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
+    setSubmitStatus("idle")
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    if (submitting.current) return
+    const website = new FormData(e.currentTarget).get("website")
+    submitting.current = true
     setIsSubmitting(true)
+    setSubmitStatus("idle")
+    setErrorMessage("")
 
     try {
-      await fetch("mailto:anirbandutta458@gmail.com?subject=New Message from Portfolio&body=" +
-        encodeURIComponent(`Name: ${formData.name}\nEmail: ${formData.email}\n\nMessage:\n${formData.message}`))
-      
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...formData, website }),
+        signal: AbortSignal.timeout(20000),
+      })
+      const result = await response.json()
+      if (!response.ok || result.success !== true) {
+        setErrorMessage(typeof result.error === "string" ? result.error : "Unable to send your message. Please try again or email me directly.")
+        setSubmitStatus("error")
+        return
+      }
       setSubmitStatus("success")
       setFormData({ name: "", email: "", message: "" })
-      setTimeout(() => setSubmitStatus("idle"), 3000)
     } catch {
+      setErrorMessage("Unable to confirm sending. Please check your connection or email me directly.")
       setSubmitStatus("error")
-      setTimeout(() => setSubmitStatus("idle"), 3000)
     } finally {
+      submitting.current = false
       setIsSubmitting(false)
     }
   }
@@ -53,7 +70,13 @@ export default function Contact() {
         </div>
 
         <div className="mt-12 rounded-4xl border border-white/10 bg-white/5 p-8 md:p-10 shadow-2xl shadow-black/30 backdrop-blur-xl max-w-2xl mx-auto">
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} aria-busy={isSubmitting}>
+            <div className="hidden" aria-hidden="true">
+              <label htmlFor="website">Leave this field empty</label>
+              <input id="website" name="website" type="text" tabIndex={-1} autoComplete="off" />
+            </div>
+            <fieldset disabled={isSubmitting} className="min-w-0 space-y-6">
+              <legend className="sr-only">Send Anirban a message</legend>
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-white mb-3">
                 Your Name
@@ -62,11 +85,13 @@ export default function Contact() {
                 type="text"
                 id="name"
                 name="name"
+                autoComplete="name"
+                maxLength={100}
                 value={formData.name}
                 onChange={handleChange}
                 required
                 className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white placeholder-white/40 transition focus:border-purple-400/40 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
-                placeholder="Anirban"
+                placeholder="Your name"
               />
             </div>
 
@@ -78,6 +103,8 @@ export default function Contact() {
                 type="email"
                 id="email"
                 name="email"
+                autoComplete="email"
+                maxLength={254}
                 value={formData.email}
                 onChange={handleChange}
                 required
@@ -93,29 +120,35 @@ export default function Contact() {
               <textarea
                 id="message"
                 name="message"
+                minLength={10}
+                maxLength={5000}
+                aria-describedby="message-hint"
                 value={formData.message}
                 onChange={handleChange}
                 required
                 rows={5}
-                className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white placeholder-white/40 transition focus:border-purple-400/40 focus:outline-none focus:ring-2 focus:ring-purple-500/20 resize-none"
+                className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white placeholder-white/40 transition focus:border-purple-400/40 focus:outline-none focus:ring-2 focus:ring-purple-500/20 resize-y"
                 placeholder="Tell me about your project..."
               />
+              <p id="message-hint" className="mt-2 text-xs text-zinc-400">10 to 5,000 characters.</p>
             </div>
 
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full rounded-2xl bg-purple-600 px-6 py-3 font-medium text-white shadow-lg shadow-purple-600/25 transition hover:bg-purple-700 disabled:opacity-50"
+              className="w-full rounded-2xl bg-purple-600 px-6 py-3 font-medium text-white shadow-lg shadow-purple-600/25 transition hover:bg-purple-700 disabled:opacity-50 disabled:cursor-wait focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-purple-400"
             >
               {isSubmitting ? "Sending..." : "Send Message"}
             </button>
+            </fieldset>
 
-            {submitStatus === "success" && (
-              <p className="text-sm text-green-400 text-center">Message sent! I&apos;ll get back to you soon.</p>
-            )}
-            {submitStatus === "error" && (
-              <p className="text-sm text-red-400 text-center">Something went wrong. Please try again.</p>
-            )}
+            <div role="status" aria-live="polite" aria-atomic="true" className="mt-4 text-center text-sm">
+              {submitStatus === "success" && <p className="text-green-400">Thanks! Your message has been submitted. I&apos;ll reply to the email you provided.</p>}
+              {submitStatus === "error" && <p className="text-red-400">{errorMessage}</p>}
+            </div>
+            <p className="mt-4 text-center text-sm leading-6 text-zinc-400">
+              Prefer email? <a href="mailto:anirbandutta458@gmail.com" className="break-all text-purple-300 underline underline-offset-4 hover:text-purple-200 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-purple-400">anirbandutta458@gmail.com</a>
+            </p>
           </form>
 
           <div className="mt-10 border-t border-white/10 pt-10">
